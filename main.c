@@ -3,6 +3,17 @@
 #include <math.h>
 #include "matrix.h"
 
+float cube[] = {
+    -1, -1,  1, /* front verts */
+     1, -1,  1,
+    -1,  1,  1,
+     1,  1,  1,
+    -1, -1, -1, /* back verts */
+     1, -1, -1,
+    -1,  1, -1,
+     1,  1, -1
+};
+
 int main()
 {
     //float px, py     = 0; // 2d screen resolution

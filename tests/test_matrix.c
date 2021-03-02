@@ -1,6 +1,7 @@
+#include <stdio.h>
 #include "matrix.h"
 
-int simple()
+void simple()
 {
     matrix m1 = matrix_init(2, 3);
     matrix_print(m1);
@@ -66,9 +67,9 @@ void other()
 
 int main()
 {
-
     simple();
     other();
+
     return 0;
 }
 
