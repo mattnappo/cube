@@ -7,7 +7,7 @@
 #define PX 100
 #define PY 40
 
-float cubed[] = {
+float cube_verts_d[] = {
     -1, -1,  1, /* front verts */
      1, -1,  1,
     -1,  1,  1,
@@ -18,50 +18,84 @@ float cubed[] = {
      1,  1, -1
 };
 
+float cube_edges_d[] = {
+
+};
+
 float cx=0, cy=0, cz=5; // Position of the camera
 float rx=0, ry=0, rz=0; // Orientation of the camera
 
-float s = 0, f = 0.05;
+float s = 0;    // Skew
+float f = 0.15; // POV (kind of like scale)
 
 float ex=0.06, ey=0.048; // Display surface
 
 // Transpose a 3d point into a 2d point
 vec2d transpose_point(float ax, float ay, float az)
 {
-    float rpd[] = {
-        2*ax - cx,
-        2*ay - cy,
-        2*az - cz
-    };
-    matrix pos = matrix_from_array(rpd, 3, 1);
 
-    float rotxd[] = {
-        1,        0,       0,
-        0,  cos(rz), sin(rx),
-        0, -sin(rx), cos(rx)
+    // Linear shift matrix (to map to positive only)
+    float shift_d[] = {
+       1,  0,  0,  PX/2,
+       0, -1,  0,  PY/2,
+       0,  0,  1,  0,
+       0,  0,  0,  1 
     };
-    matrix rotx = matrix_from_array(rotxd, 3, 3);
+    matrix shift = matrix_from_array(shift_d, 4, 4);
 
-    float rotyd[] = {
-        cos(ry), 0, -sin(ry),
-        0,       1,        0,
-        sin(ry), 0,  cos(ry)
+    // Projection matrix
+    float proj_d[] = {
+        (f*PX) / (2*ex), s,               0, 0,
+        0,               (f*PY) / (2*ey), 0, 0,
+        0,               0,              -1, 0,
+        0,               0,               0, 1
     };
-    matrix roty = matrix_from_array(rotyd, 3, 3);
+    matrix proj = matrix_from_array(proj_d, 4, 4);
 
-    float rotzd[] = {
-        cos(rz), sin(rz), 0,
-       -sin(rz), cos(rz), 0,
-       0,        0,       1
+    // Camera positioning matrix
+    float cam_d[] = {
+        1, 0, 0, -cx,
+        0, 1, 0, -cy,
+        0, 0, 1, -cz,
+        0, 0, 0, 1
     };
-    matrix rotz = matrix_from_array(rotzd, 3, 3);
+    matrix cam = matrix_from_array(cam_d, 4, 4);
 
-    float projd[] = {
-        (f*PX)/(2*ex), s,             0,
-        0,             (f*PY)/(2*ey), 0,
-        0,             -1,            0
+    // x axis rotation
+    float rotx_d[] = {
+        1,       0,        0, 0,
+        0, cos(rx), -sin(rx), 0,
+        0, sin(rx),  cos(rx), 0,
+        0,       0,        0, 1
     };
-    matrix proj = matrix_from_array(projd, 3, 3);
+    matrix rotx = matrix_from_array(rotx_d, 4, 4);
+
+    // y axis rotation
+    float roty_d[] = {
+        cos(ry),  0,  sin(ry),  0,
+        0,        1,        0,  0,
+        -sin(ry), 0,  cos(ry),  0,
+        0,        0,        0,  1
+    };
+    matrix roty = matrix_from_array(roty_d, 4, 4);
+
+    // z axis rotation
+    float rotz_d[] = {
+        cos(rz), -sin(rz), 0, 0,
+        sin(rz),  cos(rz), 0, 0,
+        0,              0, 1, 0,
+        0,              0, 0, 1
+    };
+    matrix rotz = matrix_from_array(rotz_d, 4, 4);
+
+    // Position from camera
+    float pos_d[] = {
+        ax - cx,
+        ay - cy,
+        az - cz,
+        1
+    };
+    matrix pos = matrix_from_array(pos_d, 4, 1);
 
     matrix d = matrix_multiply(proj, matrix_multiply(rotx, matrix_multiply(roty, matrix_multiply(rotz, pos))));
     float dx = matrix_get(d, 0, 0);
@@ -90,7 +124,7 @@ int main()
     char scr[PY][PX];
     memset(scr, ' ', PX*PY);
 
-    matrix cube_verts = matrix_from_array(cubed, 8, 3);
+    matrix cube_verts = matrix_from_array(cube_verts_d, 8, 3);
     for (int i = 0; i < cube_verts.rows; i++) {
         vec2d t = transpose_point(
             matrix_get(cube_verts, i, 0),
