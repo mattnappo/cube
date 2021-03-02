@@ -34,15 +34,6 @@ float ex=0.06, ey=0.048; // Display surface
 vec2d transpose_point(float ax, float ay, float az)
 {
 
-    // Linear shift matrix (to map to positive only)
-    float shift_d[] = {
-       1,  0,  0,  PX/2,
-       0, -1,  0,  PY/2,
-       0,  0,  1,  0,
-       0,  0,  0,  1 
-    };
-    matrix shift = matrix_from_array(shift_d, 4, 4);
-
     // Projection matrix
     float proj_d[] = {
         (f*PX) / (2*ex), s,               0, 0,
@@ -51,15 +42,6 @@ vec2d transpose_point(float ax, float ay, float az)
         0,               0,               0, 1
     };
     matrix proj = matrix_from_array(proj_d, 4, 4);
-
-    // Camera positioning matrix
-    float cam_d[] = {
-        1, 0, 0, -cx,
-        0, 1, 0, -cy,
-        0, 0, 1, -cz,
-        0, 0, 0, 1
-    };
-    matrix cam = matrix_from_array(cam_d, 4, 4);
 
     // x axis rotation
     float rotx_d[] = {
