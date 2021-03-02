@@ -9,7 +9,7 @@ typedef struct matrix
 } matrix;
 
 matrix matrix_init(int rows, int cols);
-//matrix matrix_from_array(float data[][], int rows, int cols);
+matrix matrix_from_array(float data[], int rows, int cols);
 void matrix_print(matrix m);
 float matrix_get(matrix m, int row, int col);
 void matrix_set(matrix m, float val, int row, int col);

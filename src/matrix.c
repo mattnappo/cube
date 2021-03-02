@@ -5,7 +5,7 @@
 
 void err_outb(int er, int ec, int r, int c)
 {
-    printf("ERROR: index (%d, %d) out of bounds of matrix (%d, %d)\n ",
+    printf("ERROR: index (%d, %d) out of bounds of matrix (%d, %d)\n",
         er, ec, r, c);
 }
 
@@ -16,11 +16,23 @@ matrix matrix_init(int rows, int cols)
     return m;
 }
 
-//matrix matrix_from_array(float data[][], int rows, int cols);
+matrix matrix_from_array(float data[], int rows, int cols)
+{
+    matrix m = { .rows = rows, .cols = cols };
+    m.data = calloc(rows*cols, sizeof(float));
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            m.data[cols * i + j] = data[cols * i + j];
+            //matrix_set(m, i, j, data[cols * i + j]); :w
+            //
+        }
+    }
+
+    return m;
+}
 
 void matrix_print(matrix m)
 {
-    printf("\n");
     for (int i = 0; i < m.rows; i++) {
         printf("| ");
         for (int j = 0; j < m.cols; j++) {
@@ -44,6 +56,7 @@ void matrix_set(matrix m, float val, int row, int col)
 {
     if (row < m.rows && col < m.cols) {
         m.data[m.cols * row + col] = val;
+        return;
     }
     err_outb(row, col, m.rows, m.cols);
 }
@@ -51,17 +64,18 @@ void matrix_set(matrix m, float val, int row, int col)
 matrix matrix_multiply(matrix m1, matrix m2)
 {
     if (m1.cols != m2.rows) {
-        printf("ERROR: cannot multiply (%d, %d) by (%d, %d)\n", m1.rows, m1.cols, m2.rows, m2.cols);
+        printf("ERROR: cannot multiply (%d, %d) by (%d, %d)\n",
+            m1.rows, m1.cols, m2.rows, m2.cols);
         return (matrix) {};
     }
     matrix mm = { .rows = m1.rows, .cols = m2.cols };
+    mm.data = calloc(mm.rows*mm.cols, sizeof(float));
 
     // Please don't just me for this
-    for (int i = 0; i < m1.rows; ++i) {
-        for (int j = 0; j < m2.cols; ++j) {
-            for (int k = 0; k < m1.cols; ++k) {
-                // mm[i][j] += m1[i][k] * m2[k][j];
-                mm.data[mm.cols*i+j] += m1.data[mm.cols*i+k] * m2.data[mm.cols*k+j];
+    for (int i = 0; i < m1.rows; i++) {
+        for (int j = 0; j < m2.cols; j++) {
+            for (int k = 0; k < m1.cols; k++) {
+                mm.data[mm.cols*i+j] += matrix_get(m1, i, k) * matrix_get(m2, k, j);
             }
         }
     }
