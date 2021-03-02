@@ -9,6 +9,11 @@ void err_outb(int er, int ec, int r, int c)
         er, ec, r, c);
 }
 
+void vec2d_print(vec2d v)
+{
+    printf("(%d, %d)\n", v.x, v.y);
+}
+
 matrix matrix_init(int rows, int cols)
 {
     matrix m = { .rows = rows, .cols = cols };
