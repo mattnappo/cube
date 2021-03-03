@@ -22,13 +22,14 @@ float cube_edges_d[] = {
 
 };
 
-float cx=0, cy=0, cz=5; // Position of the camera
+float cx=0, cy=0, cz=10; // Position of the camera
 float rx=0, ry=0, rz=0; // Orientation of the camera
 
 float s = 0;    // Skew
 float f = 0.15; // POV (kind of like scale)
 
-float ex=0.06, ey=0.048; // Display surface
+//float ex=0.06, ey=0.048; // Display surface
+float ex=0.06, ey=0.046; // Display surface
 
 // Transpose a 3d point into a 2d point
 vec2d transpose_point(float ax, float ay, float az)
@@ -104,26 +105,35 @@ void print_scr(char scr[PY][PX])
 int main()
 {
     char scr[PY][PX];
-    memset(scr, ' ', PX*PY);
-
     matrix cube_verts = matrix_from_array(cube_verts_d, 8, 3);
-    for (int i = 0; i < cube_verts.rows; i++) {
-        vec2d t = transpose_point(
-            matrix_get(cube_verts, i, 0),
-            matrix_get(cube_verts, i, 1),
-            matrix_get(cube_verts, i, 2)
-        );
-        vec2d_print(t);
-        //memset(&scr[t.y][t.x], '*', 1);
-        int tmx = t.x + PX/2;
-        int tmy = t.y + PY/2 + 1;
-        printf("mapped coords: %d, %d\n", tmx, tmy);
-        memset(scr[tmy]+tmx, '*', 1);
-        //printf("thing: %c\n", scr[t.y][t.x]);
-        //printf("thing: %c\n", scr[t.y-1][t.x]);
+    while (1) {
+        /* set points */
+        memset(scr, ' ', PX*PY);
+        for (int i = 0; i < cube_verts.rows; i++) {
+            vec2d t = transpose_point(
+                matrix_get(cube_verts, i, 0),
+                matrix_get(cube_verts, i, 1),
+                matrix_get(cube_verts, i, 2)
+            );
+            vec2d_print(t);
+            //memset(&scr[t.y][t.x], '*', 1);
+            int tmx = t.x + PX/2;
+            int tmy = t.y + PY/2 + 1;
+            printf("mapped coords: %d, %d\n", tmx, tmy);
+            memset(scr[tmy]+tmx, '*', 1);
+            //printf("thing: %c\n", scr[t.y][t.x]);
+            //printf("thing: %c\n", scr[t.y-1][t.x]);
+        }
+
+        /* set edges */
+        for (int i = 0; i < cube_verts.rows; i++) {
+
+        }
+        
+        print_scr(scr);
+        rz += 0.02;
+        usleep(60000);
     }
-    
-    print_scr(scr);
 
     return 0;
 }
